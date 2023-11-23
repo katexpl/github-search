@@ -11,7 +11,6 @@ const GithubSearch: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      // Get user email
       const response: AxiosResponse = await axios.get(
         `https://api.github.com/users/${userLogin}`
       );
@@ -21,14 +20,12 @@ const GithubSearch: React.FC = () => {
         console.error("Failed to retrieve login.");
       }
 
-      // Get user's last 5 updated projects
       const projects: AxiosResponse = await axios.get(
         `https://api.github.com/users/${userLogin}/repos?sort=updated&direction=desc&per_page=5`
       );
       setUserProjects(projects.data);
 
       if (projects.data) {
-        // Get the last 5 commits for each project
         const commits = await Promise.all(
           projects.data.map(async (project: IProject) => {
             if (project.size === 0) {
