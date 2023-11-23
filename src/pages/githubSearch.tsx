@@ -17,7 +17,7 @@ const GithubSearch: React.FC = () => {
 
       if (response.status === 200 && response.data.login) {
         setUserLogin(response.data.login);
-        setError(""); // Clear the error on successful user retrieval
+        setError("");
       } else {
         console.error("Failed to retrieve login.");
         setError("An error occurred");
@@ -48,18 +48,17 @@ const GithubSearch: React.FC = () => {
           })
         );
 
-        // Check if there are no commits for any project
         if (commits.every((commitArray) => commitArray.length === 0)) {
           setError("This user has no commits.");
         } else {
-          setError(""); // Clear the error if there are commits
+          setError("");
         }
       }
     } catch (err: unknown) {
       const error = err as IError;
       if (error.response && error.response.status === 404) {
         setError(`User ${userLogin} not found`);
-        setUserProjects([]); // Reset userProjects on user not found
+        setUserProjects([]);
       } else {
         setError("An error occurred");
       }
