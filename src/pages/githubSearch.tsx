@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios, { AxiosResponse } from "axios";
-import GoBackArrow from "../components/backArrow";
+import GoBackArrow from "../components/BackArrow";
 import { IProject, ICommit, IError } from "../models/models";
 
 const GithubSearch: React.FC = () => {
@@ -14,10 +14,13 @@ const GithubSearch: React.FC = () => {
       const response: AxiosResponse = await axios.get(
         `https://api.github.com/users/${userLogin}`
       );
+
       if (response.status === 200 && response.data.login) {
         setUserLogin(response.data.login);
+        setError(""); // Clear the error on successful user retrieval
       } else {
         console.error("Failed to retrieve login.");
+        setError("An error occurred");
       }
 
       const projects: AxiosResponse = await axios.get(
@@ -29,7 +32,7 @@ const GithubSearch: React.FC = () => {
         const commits = await Promise.all(
           projects.data.map(async (project: IProject) => {
             if (project.size === 0) {
-              return;
+              return [];
             }
             const { data: projectCommits } = await axios.get(
               `https://api.github.com/repos/${userLogin}/${project.name}/commits`
@@ -44,16 +47,25 @@ const GithubSearch: React.FC = () => {
             return project;
           })
         );
+
+        // Check if there are no commits for any project
+        if (commits.every((commitArray) => commitArray.length === 0)) {
+          setError("This user has no commits.");
+        } else {
+          setError(""); // Clear the error if there are commits
+        }
       }
     } catch (err: unknown) {
       const error = err as IError;
       if (error.response && error.response.status === 404) {
         setError(`User ${userLogin} not found`);
+        setUserProjects([]); // Reset userProjects on user not found
       } else {
         setError("An error occurred");
       }
     }
   };
+
   return (
     <>
       <GoBackArrow />
@@ -78,27 +90,25 @@ const GithubSearch: React.FC = () => {
             <h2>Projects:</h2>
 
             {userProjects.map((project) => (
-              <>
-                <div key={project.id}>
-                  <h3>{project.name}</h3>
-                  <p>Last updated: {project.updated_at}</p>
-                  <h4>Commits:</h4>
-                  <ul>
-                    {project.commits
-                      ? project.commits.map((commit) => (
-                          <li>
-                            {commit.commit.message ? (
-                              commit.commit.message
-                            ) : (
-                              <i>No message</i>
-                            )}{" "}
-                          </li>
-                        ))
-                      : "No commits available"}
-                  </ul>
-                </div>
+              <div key={project.id}>
+                <h3>{project.name}</h3>
+                <p>Last updated: {project.updated_at}</p>
+                <h4>Commits:</h4>
+                <ul>
+                  {project.commits
+                    ? project.commits.map((commit) => (
+                      <li key={commit.sha}>
+                        {commit.commit.message ? (
+                          commit.commit.message
+                        ) : (
+                          <i>No message</i>
+                        )}{" "}
+                      </li>
+                    ))
+                    : "No commits available"}
+                </ul>
                 <div className="styled-separator" />
-              </>
+              </div>
             ))}
           </div>
         )}

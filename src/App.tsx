@@ -1,17 +1,15 @@
 import GithubSearch from "./pages/githubSearch";
-import WelcomeScreen from "./pages/welcomeScreen";
+import WelcomeScreen from "./pages/WelcomeScreen";
 import "./styles/index.scss";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="app">
-        <Routes>
-          <Route path="/" element={<WelcomeScreen />} />
-          <Route path="/github-search" element={<GithubSearch />} />
-        </Routes>
-      </div>
+      <Routes>
+        <Route path="/" element={<WelcomeScreen />} />
+        <Route path="/github-search" element={<GithubSearch />} />
+      </Routes>
     </BrowserRouter>
   );
 }
