@@ -1,5 +1,5 @@
-import GithubSearch from "./pages/GithubSearch";
-import WelcomeScreen from "./pages/WelcomeScreen";
+import GithubSearch from "./pages/githubSearch";
+import WelcomeScreen from "./pages/welcomeScreen";
 import "./styles/index.scss";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 
